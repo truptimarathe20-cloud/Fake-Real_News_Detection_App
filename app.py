@@ -5,17 +5,14 @@ import xgboost as xgb
 st.set_page_config(page_title="Fake & Real News Detection System", page_icon="📰")
 st.header("Real-Time Fake News Detection System")
 
-# Model aur Vectorizer load karein
 model = xgb.XGBClassifier()
 model.load_model("xgb_model.json")
 
 with open("vectorizer.pkl", "rb") as f:
   vectorizer = pickle.load(f)
 
-# Input text box
 news_text = st.text_area("Enter your headlines here:")
 
-# Predict button aur logic
 if st.button("Predict"):
   if news_text.strip() == "":
     st.warning("Please enter text to analyze.")
