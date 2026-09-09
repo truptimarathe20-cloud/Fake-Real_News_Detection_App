@@ -1,25 +1,29 @@
-import streamlit as st
 import pickle
+import streamlit as st
 import xgboost as xgb
 
-# XGBoost model aur Vectorizer load karna
+st.set_page_config(page_title="Fake & Real News Detection System", page_icon="📰")
+st.header("Real-Time Fake News Detection System")
+
+# Model aur Vectorizer load karein
 model = xgb.XGBClassifier()
-model.load_model('xgb_model.json')
+model.load_model("xgb_model.json")
 
-vectorizer = pickle.load(open('vectorizer.pkl', 'rb'))
+with open("vectorizer.pkl", "rb") as f:
+  vectorizer = pickle.load(f)
 
-st.title("Real-Time Fake News Detection System")
+# Input text box
+news_text = st.text_area("Enter your headlines here:")
 
-news_text = st.text_area("Enter your headlines or text:")
-
+# Predict button aur logic
 if st.button("Predict"):
-    if news_text.strip() == "":
-        st.warning("Please enter a text.")
+  if news_text.strip() == "":
+    st.warning("Please enter text to analyze.")
+  else:
+    transformed_text = vectorizer.transform([news_text])
+    prediction = model.predict(transformed_text)
+
+    if prediction[0] == 1:
+      st.error("This News is FAKE!")
     else:
-        transformed_text = vectorizer.transform([news_text])
-        prediction = model.predict(transformed_text)
-        
-        if prediction[0] == 1 or prediction == 'Fake':
-            st.error("This is a fake news.")
-        else:
-            st.success("This is a real news.")
+      st.success("This News is REAL!")
